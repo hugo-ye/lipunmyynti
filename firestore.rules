@@ -1,0 +1,27 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    match /event/information {
+      allow get: if request.auth != null
+      allow read, write: if request.auth != null && exists(/databases/$(database)/documents/admins/$(request.auth.uid))
+
+    }
+    match /event/memberExclusive {
+      allow get: if request.auth != null && get(/databases/$(database)/documents/registrants/$(request.auth.uid)).data.isAdmitted == true
+      allow read, write: if request.auth != null && exists(/databases/$(database)/documents/admins/$(request.auth.uid))
+
+    }
+    match /registrants/{registrant} {
+    allow get: if request.auth != null && request.auth.uid == registrant;
+    allow read, write: if request.auth != null && exists(/databases/$(database)/documents/admins/$(request.auth.uid))
+
+    }
+
+    match /transferLogs/{transferLog} {
+    allow read, write: if request.auth != null && exists(/databases/$(database)/documents/admins/$(request.auth.uid))
+    }
+    match /admins/{admin} {
+    allow read: if request.auth != null && exists(/databases/$(database)/documents/admins/$(request.auth.uid))
+    }
+  }
+}
