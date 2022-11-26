@@ -47,6 +47,7 @@ const AdminLog = () => {
             fromEmail: doc.data().fromEmail,
             toEmail: doc.data().toEmail,
             id: doc.id,
+            resolved: doc.data().resolved,
           });
         });
         setLogs(allLogs);
