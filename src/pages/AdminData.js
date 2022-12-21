@@ -93,13 +93,16 @@ const AdminData = () => {
   };
 
   const handleClick = (e) => {
+    e.preventDefault()
     function isAdmitted(user) {
       return user.isAdmitted === true && user.hasPaid === true;
     }
 
     const printArray = users.filter(isAdmitted);
-    printArray.sort((a, b) => (a.lastName > b.lastName ? 1 : -1));
-    e.preventDefault();
+    printArray.sort(function (a, b) {
+      return a.lastName.toLowerCase().localeCompare(b.lastName.toLowerCase());
+    });
+
     const doc = new jsPDF();
     autoTable(doc, {
       head: [["Sukunimi", "Etunimi", "Luokka-aste"]],
