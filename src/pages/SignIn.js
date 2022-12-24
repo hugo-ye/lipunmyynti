@@ -21,7 +21,7 @@ const SignIn = () => {
     <Box sx={{ display: "flex", flexDirection: "column" }}>
       <Typography variant="h2">TK-bileet</Typography>
       <Button variant="contained" onClick={signIn}>
-        Kirjaudu sisäään Google-tilillä
+        Kirjaudu sisäään Google-tilillä!
       </Button>
     </Box>
   );
