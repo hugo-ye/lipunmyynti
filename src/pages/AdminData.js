@@ -1,8 +1,8 @@
-import React, { useState } from "react";
-import { Box, Typography } from "@mui/material";
-import { DataGrid } from "@mui/x-data-grid";
-import { useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo } from "react";
+import { useNavigate } from "react-router-dom";
+
 import { useAuth } from "../contexts/AuthContext";
+
 import { db } from "../firebase/firebase";
 import {
   collection,
@@ -11,11 +11,15 @@ import {
   getDoc,
   updateDoc,
 } from "firebase/firestore";
-import { useNavigate } from "react-router-dom";
-import CommitChange from "../components/CommitChange";
+
+import { Box, Stack, Typography } from "@mui/material";
+import { DataGrid } from "@mui/x-data-grid";
+import Button from "@mui/material/Button";
+
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
-import Button from "@mui/material/Button";
+
+import CommitChange from "../components/CommitChange";
 
 const AdminData = () => {
   const [users, setUsers] = useState([]);
@@ -25,7 +29,9 @@ const AdminData = () => {
   const [pageSize, setPageSize] = useState(20);
   const [rowId, setRowId] = useState(null);
   const [distributed, setDistributed] = useState(true);
+  const [quota, setQuota] = useState(0);
 
+  // Routes to sign-in page if user is not authenticated or is not an admin
   useEffect(() => {
     if (!isLoading && !authUser) {
       navigate("/");
@@ -47,6 +53,7 @@ const AdminData = () => {
     }
   }, [authUser, isLoading]);
 
+  // Fetches data from the database
   useEffect(() => {
     if (isAdmin && !isLoading && authUser) {
       const fetchData = async () => {
@@ -59,50 +66,56 @@ const AdminData = () => {
         });
         setUsers(allUsers);
         const eventSnapshot = await getDoc(doc(db, "event", "information"));
+        setQuota(eventSnapshot.data().quota);
         setDistributed(eventSnapshot.data().hasDistributedTickets);
       };
       fetchData();
     }
   }, [isAdmin]);
 
+  // Defines the function for distributing the tickets
   const distributeTickets = async (e) => {
     e.preventDefault();
     const earliest = structuredClone(users);
-
+    // Sorts the list of registrants by the registration time exact to the thousandth of a second
     earliest.sort((a, b) =>
       a.registrationTime.seconds + a.registrationTime.nanoseconds / 1000000000 >
       b.registrationTime.seconds + b.registrationTime.nanoseconds / 1000000000
         ? 1
         : -1
     );
-
+    // Updates the data to the database for all the earliest users
     try {
-      for (let i = 0; i < 189; i++) {
+      for (let i = 0; i < quota; i++) {
         const uid = earliest[i].uid;
         const docRef = doc(db, "registrants", uid);
         await updateDoc(docRef, {
           isAdmitted: true,
         });
       }
+      // Updates to the database that tickets have been distributed for the event
       await updateDoc(doc(db, "event", "information"), {
         hasDistributedTickets: true,
       });
-    } catch (e) {
-    }
+    } catch (e) {}
     window.location.reload();
   };
-
-  const handleClick = (e) => {
-    e.preventDefault()
-    function isAdmitted(user) {
-      return user.isAdmitted === true && user.hasPaid === true;
+  // Defines the function that prints the namelist
+  const printNameList = (e) => {
+    e.preventDefault();
+// Defines a function that filters the list of registrants by ticket possession and successful payment
+    function isAdmitted(registrant) {
+      return registrant.isAdmitted === true && registrant.hasPaid === true;
     }
 
     const printArray = users.filter(isAdmitted);
+
+    // Sorts the list alphabetically disregarding capitalization
     printArray.sort(function (a, b) {
       return a.lastName.toLowerCase().localeCompare(b.lastName.toLowerCase());
     });
 
+    // Creates a pdf document with only the necessary fields
     const doc = new jsPDF();
     autoTable(doc, {
       head: [["Sukunimi", "Etunimi", "Luokka-aste"]],
@@ -110,54 +123,56 @@ const AdminData = () => {
         return [user.lastName, user.firstName, user.yearGroup];
       }),
     });
+    // Saves the pdf to the computer
     doc.save("bouncer.pdf");
   };
 
+  // Specifies the fields of the table
   const columns = useMemo(
     () => [
       {
         field: "lastName",
         headerName: "Sukunimi",
-        width: 200,
+        flex: 1,
       },
       {
         field: "firstName",
         headerName: "Etunimi",
-        width: 200,
+        flex: 1,
       },
       {
         field: "yearGroup",
         headerName: "Luokka-aste",
-        width: 200,
+        flex: 1,
       },
       {
         field: "email",
         headerName: "Sähköposti",
-        width: 200,
+        flex: 1,
       },
       {
         field: "uid",
         headerName: "id",
-        width: 200,
+        flex: 1,
       },
       {
         field: "isAdmitted",
         headerName: "Omistaa lipun",
-        width: 200,
+        flex: 1,
         type: "boolean",
         editable: true,
       },
       {
         field: "hasPaid",
         headerName: "On maksanut",
-        width: 200,
+        flex: 1,
         type: "boolean",
         editable: true,
       },
       {
         field: "transferring",
         headerName: "Vaatii huomiota",
-        width: 200,
+        flex: 1,
         type: "boolean",
         editable: true,
       },
@@ -166,6 +181,7 @@ const AdminData = () => {
         field: "actions",
         headerName: "Actions",
         Type: "actions",
+        // Save button, calls the component that commits changes to the database
         renderCell: (params) => (
           <CommitChange {...{ params, rowId, setRowId }} />
         ),
@@ -175,35 +191,40 @@ const AdminData = () => {
   );
 
   return (
-    <Box
-      sx={{
-        height: "80vh",
-        width: "100%",
-      }}
-    >
-      <Typography
-        variant="h3"
-        component="h3"
-        sx={{ textAlign: "center", mt: 3, mb: 3 }}
-      ></Typography>
-      <DataGrid
-        columns={columns}
-        rows={users}
-        getRowId={(row) => row.uid}
-        rowsPerPageOptions={[20, 50, 100]}
-        onPageSizeChange={(newPageSize) => setPageSize(newPageSize)}
-        getRowSpacing={(params) => ({})}
-        onCellEditCommit={(params) => setRowId(params.id)}
-      />
-      <Button variant="outlined" onClick={handleClick}>
-        Print
-      </Button>
-      {!distributed && (
-        <Button variant="outlined" onClick={distributeTickets}>
-          188
-        </Button>
-      )}
-    </Box>
+    <div>
+      <Box
+        sx={{
+          height: "80vh",
+          width: "100%",
+        }}
+      >
+        <Typography sx={{ textAlign: "center", mt: 3, mb: 3 }}></Typography>
+        {/* Creates a table of the data*/}
+        <DataGrid
+          columns={columns}
+          rows={users}
+          getRowId={(row) => row.uid}
+          rowsPerPageOptions={[20, 50, 100]}
+          onPageSizeChange={(newPageSize) => setPageSize(newPageSize)}
+          getRowSpacing={(params) => ({})}
+          onCellEditCommit={(params) => setRowId(params.id)}
+        />
+      </Box>
+      <Box display="flex" marginTop={2}>
+        <Stack spacing={2}>
+          {/* Shows the button that prints the namelist*/}
+          <Button variant="contained" onClick={printNameList}>
+            Tulosta nimilista
+          </Button>
+          {/* Shows distribute tickets button if tickets have not yet been distributed*/}
+          {!distributed && (
+            <Button variant="contained" onClick={distributeTickets}>
+              Valitaan {quota}
+            </Button>
+          )}
+        </Stack>
+      </Box>
+    </div>
   );
 };
 

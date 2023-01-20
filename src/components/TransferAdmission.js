@@ -17,9 +17,7 @@ const TransferAdmission = () => {
     setHasSold(true);
     await transferAdmission({
       toEmail: toEmail,
-    }).then((result) => {
-
-    });
+    })
   };
 
   return (
@@ -32,7 +30,6 @@ const TransferAdmission = () => {
       margin="auto"
       marginTop={5}
       padding={5}
-      borderRadius={5}
       boxShadow={"5px 5px 10px #ccc"}
     >
       {hasSold ? (

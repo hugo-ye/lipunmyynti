@@ -6,7 +6,7 @@ import { green } from "@mui/material/colors";
 import { doc, updateDoc } from "firebase/firestore";
 import { db } from "../firebase/firebase";
 
-const CommitChange = ({ params, rowId, setRowId }) => {
+const ResolveLog = ({ params, rowId, setRowId }) => {
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
 
@@ -76,4 +76,4 @@ const CommitChange = ({ params, rowId, setRowId }) => {
   );
 };
 
-export default CommitChange;
+export default ResolveLog;

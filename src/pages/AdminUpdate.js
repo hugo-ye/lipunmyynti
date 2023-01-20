@@ -1,28 +1,37 @@
-import { Box, Container, TextField, Typography } from "@mui/material";
 import { useEffect, useState } from "react";
-import {doc, getDoc, updateDoc} from "firebase/firestore";
-import { db } from "../firebase/firebase";
-import { useAuth } from "../contexts/AuthContext";
 import { useNavigate } from "react-router-dom";
+
+import { useAuth } from "../contexts/AuthContext";
+
+import { db } from "../firebase/firebase";
+import { doc, getDoc, updateDoc } from "firebase/firestore";
+
+import { Box, TextField, Typography } from "@mui/material";
 import Button from "@mui/material/Button";
 
 const AdminUpdate = () => {
   const { authUser, isLoading } = useAuth();
-  const [isAdmin, setIsAdmin] = useState(false);
   const navigate = useNavigate();
-  const [updates, setUpdates] = useState("");
 
-  const handleClick = (e) => {
+  // Defines states, dynamic data that are changed
+  const [isAdmin, setIsAdmin] = useState(false);
+  const [updates, setUpdates] = useState("");
+  const [paymentDetails, setPaymentDetails] = useState("");
+
+  // Function for updating database with edited information
+  const handleClick = async (e) => {
     e.preventDefault();
     try {
       const docRef = doc(db, "event", "memberExclusive");
-      updateDoc(docRef, {
+      await updateDoc(docRef, {
         updates: updates,
+        paymentDetails: paymentDetails,
       });
-    } catch (e) {
-    }
+    } catch (e) {}
+    window.location.reload();
   };
 
+  // Routes to sign-in page if user is not authenticated or is not an admin
   useEffect(() => {
     if (!isLoading && !authUser) {
       navigate("/");
@@ -44,31 +53,53 @@ const AdminUpdate = () => {
     }
   }, [authUser, isLoading]);
 
+  // Fetches existing data for the text boxes as placeholder
   useEffect(() => {
     if (isAdmin && !isLoading && authUser) {
       const fetchData = async () => {
         const docSnapshot = await getDoc(doc(db, "event", "memberExclusive"));
         setUpdates(docSnapshot.data().updates);
+        setPaymentDetails(docSnapshot.data().paymentDetails);
       };
       fetchData();
     }
   }, [isAdmin]);
 
   return (
-    <Container>
-      <Box>
-        <Typography variant="h1">Päivitystä lipunomistajille</Typography>
-        <TextField
-          defaultValue={updates}
-          placeholder="Ei tiedotusta"
-          multiline
-          rows={20}
-          sx={{ width: 600 }}
-          onChange={(e) => setUpdates(e.target.value)}
-        />
-        <Button onClick={handleClick}>Update info</Button>
-      </Box>
-    </Container>
+    <Box
+      display="flex"
+      flexDirection="column"
+      justifyContent="center"
+      alignItems="center"
+    >
+      <Typography variant="h1">Päivitystä lipunomistajille</Typography>
+      <Typography variant="h4">Tiedotukset</Typography>
+      {/* Text field for editing information updates*/}
+      <TextField
+        defaultValue={updates}
+        placeholder="Ei tiedotusta"
+        multiline
+        rows={10}
+        sx={{ width: 600 }}
+        margin="normal"
+        onChange={(e) => setUpdates(e.target.value)}
+      />
+      <Typography variant="h4">Maksutiedot</Typography>
+      {/* Text field for editing payment details*/}
+      <TextField
+        defaultValue={paymentDetails}
+        placeholder="Ei maksutietoja"
+        multiline
+        rows={10}
+        sx={{ width: 600 }}
+        margin="normal"
+        onChange={(e) => setPaymentDetails(e.target.value)}
+      />
+      {/* Submit button for saving data*/}
+      <Button variant="contained" sx={{ marginTop: 1 }} onClick={handleClick}>
+        Update info
+      </Button>
+    </Box>
   );
 };
 

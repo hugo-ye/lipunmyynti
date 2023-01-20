@@ -10,7 +10,7 @@ const Navbar = () => {
       <Toolbar>
         <Typography variant="h6">{authUser?.email}</Typography>
         <Button
-          style={{ color: "black", marginLeft: "auto" }}
+          style={{ color: "white", marginLeft: "auto" }}
           onClick={signOut}
         >
           Logout

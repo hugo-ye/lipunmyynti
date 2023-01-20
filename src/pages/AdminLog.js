@@ -1,21 +1,27 @@
-import React, { useState } from "react";
-import { Box, Typography } from "@mui/material";
-import { DataGrid } from "@mui/x-data-grid";
-import { useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo } from "react";
+import { useNavigate } from "react-router-dom";
+
 import { useAuth } from "../contexts/AuthContext";
+
 import { db } from "../firebase/firebase";
 import { collection, getDocs, doc, getDoc } from "firebase/firestore";
-import { useNavigate } from "react-router-dom";
+
 import ResolveLog from "../components/ResolveLog";
 
+import { Box, Typography } from "@mui/material";
+import { DataGrid } from "@mui/x-data-grid";
+
 const AdminLog = () => {
-  const [isAdmin, setIsAdmin] = useState("false");
   const { authUser, isLoading } = useAuth();
   const navigate = useNavigate();
+
+  // Defines states, dynamic data that are changed
+  const [isAdmin, setIsAdmin] = useState("false");
   const [pageSize, setPageSize] = useState(20);
   const [rowId, setRowId] = useState(null);
   const [logs, setLogs] = useState([]);
 
+  // Routes to sign-in page if user is not authenticated or is not an admin
   useEffect(() => {
     if (!isLoading && !authUser) {
       navigate("/");
@@ -37,6 +43,7 @@ const AdminLog = () => {
     }
   }, [authUser, isLoading]);
 
+  // Fetches data and puts it in the array
   useEffect(() => {
     if (isAdmin && !isLoading && authUser) {
       const fetchData = async () => {
@@ -56,28 +63,29 @@ const AdminLog = () => {
     }
   }, [isAdmin]);
 
+  // Specifies the fields of the table
   const columns = useMemo(
     () => [
       {
         field: "fromEmail",
         headerName: "Myyjän sähköposti",
-        width: 400,
+        flex: 1,
       },
       {
         field: "toEmail",
         headerName: "Saajan sähköposti",
-        width: 400,
+        flex: 1,
       },
       {
         field: "id",
         headerName: "ID",
-        width: 400,
+        flex: 1,
       },
 
       {
         field: "resolved",
         headerName: "Ratkaistu",
-        width: 400,
+        flex: 1,
         type: "boolean",
         editable: true,
       },
@@ -86,6 +94,7 @@ const AdminLog = () => {
         field: "actions",
         headerName: "Actions",
         Type: "actions",
+        // Save button, calls the component that commits changes to the database
         renderCell: (params) => <ResolveLog {...{ params, rowId, setRowId }} />,
       },
     ],
@@ -100,10 +109,9 @@ const AdminLog = () => {
       }}
     >
       <Typography
-        variant="h3"
-        component="h3"
         sx={{ textAlign: "center", mt: 3, mb: 3 }}
       ></Typography>
+      {/* Creates a table of the data*/}
       <DataGrid
         columns={columns}
         rows={logs}

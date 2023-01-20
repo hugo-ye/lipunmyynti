@@ -1,23 +1,28 @@
 import { useState, useEffect } from "react";
-import { useNavigate, NavLink } from "react-router-dom";
-import { useAuth } from "../contexts/AuthContext";
-import { doc, getDoc } from "firebase/firestore";
+import { useNavigate } from "react-router-dom";
+
 import { db } from "../firebase/firebase";
-import RegistrationForm from "../components/RegistrationForm";
-import InformationWall from "../components/InformationWall";
-import PaymentDetails from "../components/PaymentDetails";
-import Update from "../components/Update";
-import TransferAdmission from "../components/TransferAdmission";
-import Information from "../components/Information";
-import {CircularProgress} from "@mui/material";
+import { doc, getDoc } from "firebase/firestore";
+
+import { useAuth } from "../contexts/AuthContext";
+
+import {Box, CircularProgress, Typography} from "@mui/material";
 import Button from "@mui/material/Button";
 
+import RegistrationForm from "../components/RegistrationForm";
+import TransferAdmission from "../components/TransferAdmission";
+import Information from "../components/Information";
+import ExtraRegistration from "../components/ExtraRegistration";
+
 const Event = () => {
+  const { authUser, isLoading } = useAuth();
+  const navigate = useNavigate();
+
+  const [isLoadingData, setIsLoadingData] = useState(false);
   const [hasPaid, setHasPaid] = useState(false);
   const [isAdmitted, setIsAdmitted] = useState(false);
   const [hasRegistered, setHasRegistered] = useState(false);
   const [isActive, setIsActive] = useState(false);
-  const [isLoadingData, setIsLoadingData] = useState(false);
   const [yearGroups, setYearGroups] = useState([]);
   const [information, setInformation] = useState("");
   const [paymentInfo, setPaymentInfo] = useState("");
@@ -25,36 +30,41 @@ const Event = () => {
   const [transferring, setTransferring] = useState(false);
   const [canTransfer, setCanTransfer] = useState(false);
   const [hasDistributedTickets, setHasDistributedTickets] = useState(false);
-  const navigate = useNavigate();
+  const [extraSale, setExtraSale] = useState(false);
 
-  const { authUser, isLoading } = useAuth();
-
-  const takaisin = (e) => {
-    navigate("/eventdashboard")
-  }
+  // Redirect function for back button
+  const goBack = (e) => {
+    e.preventDefault();
+    navigate("/eventdashboard");
+  };
 
   useEffect(() => {
+
+    // Redirect to sign-in page if user is not authenticated
     if (!isLoading && !authUser) {
       navigate("/");
     } else if (!isLoading && authUser) {
+
+      // Fetch data function
       const fetchEvent = async () => {
         setIsLoadingData(true);
         try {
           const docRef = doc(db, "event", "information");
           const docSnap = await getDoc(docRef);
 
+          // Redirect to main page if event is not active
           if (docSnap.data().isActive !== true) {
-            navigate("/");
+            navigate("/eventdashboard");
           } else {
+            const data = docSnap.data();
             setIsActive(true);
-            setYearGroups(docSnap.data().yearGroups);
-            setInformation(docSnap.data().information);
-            setCanTransfer(docSnap.data().canTransfer);
-            setHasDistributedTickets(docSnap.data().hasDistributedTickets)
-
+            setYearGroups(data.yearGroups);
+            setInformation(data.information);
+            setCanTransfer(data.canTransfer);
+            setHasDistributedTickets(data.hasDistributedTickets);
+            setExtraSale(data.extraSale);
           }
-        } catch (error) {
-        }
+        } catch (error) {}
         setIsLoadingData(false);
       };
 
@@ -62,6 +72,7 @@ const Event = () => {
     }
   }, [authUser, isLoading]);
 
+  // Fetch user specific data, ran only if event is active
   useEffect(() => {
     if (isActive) {
       const fetchUserData = async () => {
@@ -74,20 +85,19 @@ const Event = () => {
             setIsAdmitted(docSnap.data().isAdmitted);
             setHasPaid(docSnap.data().hasPaid);
             setTransferring(docSnap.data().transferring);
-
           } else {
             setHasRegistered(false);
           }
           setIsLoadingData(false);
-        } catch (error) {
-
-        }
+        } catch (error) {}
         setIsLoadingData(false);
       };
+
       fetchUserData();
     }
   }, [isActive]);
 
+  // Fetching exclusive data for ticket holders. Ran only if the user has a ticket
   useEffect(() => {
     if (isAdmitted) {
       const fetchExclusiveData = async () => {
@@ -100,8 +110,7 @@ const Event = () => {
             setPaymentInfo(docSnap.data().paymentDetails);
           } else {
           }
-        } catch (error) {
-        }
+        } catch (error) {}
         setIsLoadingData(false);
       };
       fetchExclusiveData();
@@ -109,40 +118,56 @@ const Event = () => {
   }, [isAdmitted]);
 
   return (!isLoading && !authUser) || isLoadingData || !isActive ? (
-    <CircularProgress/>
+    <CircularProgress sx={{ marginLeft: "50%", marginTop: "25%" }} />
   ) : (
     <>
-      <Button onClick={takaisin}>Takaisin</Button>
+      <Box
+          display="flex"
+          flexDirection="column"
+          justifyContent="center"
+          alignItems="center"
+          bgcolor="primary.main"
+      >
+        <Typography variant="h1" color="white">
+          Sinun sivusi
+        </Typography>
+      </Box>
+      <Button onClick={goBack}>Takaisin</Button>
+      {!hasRegistered && (
+        <>
+          <Information message={information} />
+          <RegistrationForm yearGroups={yearGroups} />
+        </>
+      )}
       {hasRegistered && (
         <>
           {transferring ? (
-            <Information message="Myit tai ostit juuri lipun. Odota kunnes hallituksen bilevastaava
-              hoitaa tilanteen"/>
+            <Information
+              message="Myit tai ostit juuri lipun. Odota kunnes hallituksen bilevastaava
+              hoitaa tilanteen"
+            />
           ) : (
             <>
-              {!isAdmitted && hasDistributedTickets &&(
-                <Information message="Sinulla ei ole lippua. Voit kuitenkin ostaa lipun henkilöltä joka myy"/>
+              {!isAdmitted && hasDistributedTickets && !extraSale && (
+                <Information message="Sinulla ei ole lippua. Voit kuitenkin ostaa lipun henkilöltä joka myy" />
               )}
-              {!isAdmitted && !hasDistributedTickets &&(
-                  <Information message="Pieni hetki, ensimmäisiä 190 rekisteröidään tällä hetkellä"/>
+              {!isAdmitted && hasDistributedTickets && extraSale && (
+                  <ExtraRegistration/>
+              )}
+              {!isAdmitted && !hasDistributedTickets && (
+                <Information message="Pieni hetki, ensimmäisiä 190 rekisteröidään tällä hetkellä" />
               )}
               {isAdmitted && !hasPaid && (
-                <PaymentDetails paymentInfo={paymentInfo} />
+                <Information message={paymentInfo} />
               )}
               {isAdmitted && hasPaid && (
                 <>
-                  <Update memberUpdates={memberUpdates} />
+                  <Information message={memberUpdates} />
                   {canTransfer && <TransferAdmission />}
                 </>
               )}
             </>
           )}
-        </>
-      )}
-      {!hasRegistered && (
-        <>
-          <InformationWall information={information} />
-          <RegistrationForm yearGroups={yearGroups} />
         </>
       )}
     </>

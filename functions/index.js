@@ -19,9 +19,6 @@ exports.addRegistrantEurope = functions.region("europe-west3").https.onCall((dat
       transferring: false,
       registrationTime: admin.firestore.Timestamp.now(),
     });
-    return "success";
-  } else {
-    return "fail";
   }
 });
 
@@ -46,10 +43,22 @@ exports.transferAdmissionEurope = functions.region("europe-west3").https.onCall(
       fromDoc.update({transferring: true});
       const toDoc = admin.firestore().doc(`/registrants/${toUid}`);
       toDoc.update({transferring: true});
-      return "success";
     }
-    return "fail";
   });
+});
+
+// eslint-disable-next-line max-len
+exports.addExtraRegistrantEurope = functions.region("europe-west3").https.onCall((data, context) => {
+  const uid = context.auth.uid;
+  if (uid !== null) {
+    const doc = admin.firestore().doc(`/extraRegistration/${uid}`);
+    doc.set({
+      email: context.auth.token.email,
+      uid: uid,
+      admitted: false,
+      registrationTime: admin.firestore.Timestamp.now(),
+    });
+  }
 });
 
 // // Create and deploy your first functions

@@ -1,45 +1,66 @@
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+
+import { useAuth } from "../contexts/AuthContext";
+
 import { doc, getDoc, updateDoc } from "firebase/firestore";
 import { db } from "../firebase/firebase";
-import { useAuth } from "../contexts/AuthContext";
-import { useNavigate } from "react-router-dom";
+
 import {
   Box,
   Typography,
-  Card,
-  CardContent,
-  Grid,
   TextField,
   Switch,
+  Stack,
+  Alert,
 } from "@mui/material";
 import Button from "@mui/material/Button";
 
 const AdminSetup = () => {
   const { authUser, isLoading } = useAuth();
+  const navigate = useNavigate();
+
+  // Defines states, dynamic data that are changed
   const [isAdmin, setIsAdmin] = useState(false);
   const [quota, setQuota] = useState(0);
   const [information, setInformation] = useState("");
   const [isActive, setIsActive] = useState(false);
   const [canTransfer, setCanTransfer] = useState(false);
   const [yearGroups, setYearGroups] = useState([]);
-  const navigate = useNavigate();
-  const { event, setEvent } = useState({});
+  const [hasDistributedTickets, setHasDistributedTickets] = useState(false);
+  const [warning, setWarning] = useState(false);
 
-  const handleSubmit = (e) => {
+  // Writes edited data about the event to the database
+  const handleSubmit = async (e) => {
+    // Defines a function that checks user input is numeric
+    function isNumeric(str) {
+      // Initial state of state is an int, only user input is string. Hence ignore if is already number
+      if (typeof str === "number") {
+        return true;
+      } else if (typeof str != "string") return false; // If it is any other than number or string, it is not processed
+
+      return !isNaN(str) && !isNaN(parseFloat(str));
+    }
+
     e.preventDefault();
-    try {
-      const docRef = doc(db, "event", "information");
-      updateDoc(docRef, {
-        canTransfer: canTransfer,
-        information: information,
-        isActive: isActive,
-        quota: quota,
-        yearGroups: yearGroups,
-      });
-    } catch (e) {
+    if (!isNumeric(quota)) {
+      setWarning(true);
+    } else {
+      try {
+        const docRef = doc(db, "event", "information");
+        await updateDoc(docRef, {
+          canTransfer: canTransfer,
+          information: information,
+          isActive: isActive,
+          quota: Number(quota),
+          yearGroups: yearGroups,
+          hasDistributedTickets: hasDistributedTickets,
+        });
+      } catch (e) {}
+      window.location.reload();
     }
   };
-
+  // Routes to sign-in page if user is not authenticated or is not an admin
   useEffect(() => {
     if (!isLoading && !authUser) {
       navigate("/");
@@ -61,6 +82,7 @@ const AdminSetup = () => {
     }
   }, [authUser, isLoading]);
 
+  // Fetches existing data for the settings and sets them as placeholder
   useEffect(() => {
     if (isAdmin && !isLoading && authUser) {
       const fetchData = async () => {
@@ -71,50 +93,59 @@ const AdminSetup = () => {
         setQuota(data.quota);
         setCanTransfer(data.canTransfer);
         setYearGroups(data.yearGroups);
+        setHasDistributedTickets(data.hasDistributedTickets);
       };
       fetchData();
     }
   }, [isAdmin]);
   return (
-    <Box>
-      <Typography variant="h1">Asetukset</Typography>
-      <Card>
-        <CardContent>
-          <Grid container spacing={5}>
-            <Grid item>
-              <Typography variant="h3">Bileen tiedot</Typography>
-              <TextField
-                defaultValue={information}
-                placeholder="Ei mitään"
-                multiline
-                rows={10}
-                sx={{ width: 400 }}
-                onChange={(e) => setInformation(e.target.value)}
-              ></TextField>
-            </Grid>
-            <Grid item>
-              <Typography variant="h4">Lipunmyynti alkanut</Typography>
-              <Switch
-                checked={isActive}
-                onChange={(e) => setIsActive(e.target.checked)}
-              />
-            </Grid>
-            <Grid item>
-              <Typography variant="h4">Voi vaihtaa lippua</Typography>
-              <Switch
-                checked={canTransfer}
-                onChange={(e) => setCanTransfer(e.target.checked)}
-              />
-            </Grid>
-            <Grid item>
-              <Button variant="outlined" onClick={handleSubmit}>
-                Tallenna
-              </Button>
-            </Grid>
-          </Grid>
-        </CardContent>
-      </Card>
-    </Box>
+    <>
+      {warning && <Alert severity="error">Lukumäärän täytyy olla luku</Alert>}
+      <Box
+        justifyContent="center"
+        alignItems="center"
+        display="flex"
+        flexDirection="column"
+      >
+        <Typography variant="h1">Asetukset</Typography>
+        <Stack>
+          <Typography variant="h3">Bileen tiedot</Typography>
+          <TextField
+            defaultValue={information}
+            placeholder="Bileen tiedot tähän"
+            multiline
+            margin="normal"
+            rows={10}
+            sx={{ width: 400 }}
+            onChange={(e) => setInformation(e.target.value)}
+          ></TextField>
+          <Typography variant="h4">Lipunmyynti alkanut</Typography>
+          <Switch
+            checked={isActive}
+            onChange={(e) => setIsActive(e.target.checked)}
+          />
+          <Typography variant="h4"> Lippujen määrä </Typography>
+          <TextField
+            value={quota}
+            type="number"
+            onChange={(e) => setQuota(e.target.value)}
+          />
+          <Typography variant="h4">Ensimmäiset x on valittu</Typography>
+          <Switch
+            checked={hasDistributedTickets}
+            onChange={(e) => setHasDistributedTickets(e.target.checked)}
+          />
+          <Typography variant="h4">Voi vaihtaa lippua</Typography>
+          <Switch
+            checked={canTransfer}
+            onChange={(e) => setCanTransfer(e.target.checked)}
+          />
+          <Button variant="contained" onClick={handleSubmit}>
+            Tallenna
+          </Button>
+        </Stack>
+      </Box>
+    </>
   );
 };
 
