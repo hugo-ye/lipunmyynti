@@ -19,15 +19,18 @@ const Event = () => {
   const navigate = useNavigate();
 
   const [isLoadingData, setIsLoadingData] = useState(false);
+
   const [hasPaid, setHasPaid] = useState(false);
   const [isAdmitted, setIsAdmitted] = useState(false);
   const [hasRegistered, setHasRegistered] = useState(false);
+  const [transferring, setTransferring] = useState(false);
+
   const [isActive, setIsActive] = useState(false);
   const [yearGroups, setYearGroups] = useState([]);
   const [information, setInformation] = useState("");
   const [paymentInfo, setPaymentInfo] = useState("");
   const [memberUpdates, setMemberUpdates] = useState("");
-  const [transferring, setTransferring] = useState(false);
+
   const [canTransfer, setCanTransfer] = useState(false);
   const [hasDistributedTickets, setHasDistributedTickets] = useState(false);
   const [extraSale, setExtraSale] = useState(false);
@@ -39,19 +42,16 @@ const Event = () => {
   };
 
   useEffect(() => {
-
     // Redirect to sign-in page if user is not authenticated
     if (!isLoading && !authUser) {
       navigate("/");
     } else if (!isLoading && authUser) {
-
       // Fetch data function
       const fetchEvent = async () => {
         setIsLoadingData(true);
         try {
           const docRef = doc(db, "event", "information");
           const docSnap = await getDoc(docRef);
-
           // Redirect to main page if event is not active
           if (docSnap.data().isActive !== true) {
             navigate("/eventdashboard");
@@ -79,6 +79,7 @@ const Event = () => {
         setIsLoadingData(true);
         try {
           const docRef = doc(db, "registrants", authUser.uid);
+          // Path to the document of the registrant
           const docSnap = await getDoc(docRef);
           if (docSnap.exists()) {
             setHasRegistered(true);
@@ -128,7 +129,7 @@ const Event = () => {
           alignItems="center"
           bgcolor="primary.main"
       >
-        <Typography variant="h1" color="white">
+        <Typography variant="h2" color="white">
           Sinun sivusi
         </Typography>
       </Box>

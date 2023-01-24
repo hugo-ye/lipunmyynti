@@ -12,9 +12,16 @@ const AuthUserContext = createContext({
   isLoading: true,
 });
 
+export const useAuth = () => useContext(AuthUserContext);
+
 export function useFirebaseAuth() {
   const [authUser, setAuthUser] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, authStateChanged);
+    return () => unsubscribe();
+  }, []);
 
   const clear = () => {
     setAuthUser(null);
@@ -46,10 +53,7 @@ export function useFirebaseAuth() {
       setIsLoading(false);
     });
 
-  useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, authStateChanged);
-    return () => unsubscribe();
-  }, []);
+
   return {
     authUser,
     isLoading,
@@ -66,4 +70,4 @@ export function AuthUserProvider({ children }) {
   );
 }
 
-export const useAuth = () => useContext(AuthUserContext);
+

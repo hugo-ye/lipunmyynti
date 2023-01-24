@@ -14,6 +14,7 @@ const RegistrationForm = ({ yearGroups }) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     const addRegistrant = httpsCallable(functions, "addRegistrantEurope");
+    // Calls the server-side function with the following parameters
     await addRegistrant({
       firstName: firstName,
       lastName: lastName,

@@ -24,10 +24,12 @@ const CommitChange = ({ params, rowId, setRowId }) => {
         setSuccess(true);
         setRowId(null);
       });
-
       setLoading(false);
-    } catch (error) {}
+    } catch (error) {
+      console.log(error)
+    }
   };
+
   useEffect(() => {
     if (rowId === params.id && success) setSuccess(false);
   }, [rowId]);

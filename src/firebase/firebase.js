@@ -17,9 +17,9 @@ const firebaseConfig = {
 // Initialize Firebase
 export const app = initializeApp(firebaseConfig);
 
-// Initialize Authentication
+// Initialize features
 export const auth = getAuth();
 export const db = getFirestore();
-export const functions = getFunctions(app, "europe-west3");
+export const functions = getFunctions(app);
 
 

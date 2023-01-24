@@ -3,11 +3,14 @@ const functions = require("firebase-functions");
 const admin = require("firebase-admin");
 admin.initializeApp();
 
+
 // eslint-disable-next-line max-len
 exports.addRegistrantEurope = functions.region("europe-west3").https.onCall((data, context) => {
-  const uid = context.auth.uid;
+  const uid = context.auth.uid; // Uses the uid of the authenticated user
   if (uid !== null) {
+    // Defines the path to the new document
     const doc = admin.firestore().doc(`/registrants/${uid}`);
+    // Sets the document with the following parameters
     doc.set({
       email: context.auth.token.email,
       firstName: data.firstName,

@@ -1,31 +1,39 @@
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
+    // Reusable function for checking if request comes from an admin
+    function isAdmin() {
+      return request.auth != null && exists(/databases/$(database)/documents/admins/$(request.auth.uid))
+    }
+
     match /event/information {
+    // Allow getting the document if user has authenticated
       allow get: if request.auth != null
-      allow read, write: if request.auth != null && exists(/databases/$(database)/documents/admins/$(request.auth.uid))
-
+      allow read, write: if isAdmin();
     }
+
     match /event/memberExclusive {
+    // Allow getting the document if user has a ticket
       allow get: if request.auth != null && get(/databases/$(database)/documents/registrants/$(request.auth.uid)).data.isAdmitted == true
-      allow read, write: if request.auth != null && exists(/databases/$(database)/documents/admins/$(request.auth.uid))
-
+      allow read, write: if isAdmin();
     }
-    match /registrants/{registrant} {
-    allow get: if request.auth != null && request.auth.uid == registrant;
-    allow read, write: if request.auth != null && exists(/databases/$(database)/documents/admins/$(request.auth.uid))
 
+    match /registrants/{registrant} {
+    // Allow getting the document if the document id matches the user id
+      allow get: if request.auth != null && request.auth.uid == registrant;
+      allow read, write: if isAdmin();
     }
 
     match /transferLogs/{transferLog} {
-    allow read, write: if request.auth != null && exists(/databases/$(database)/documents/admins/$(request.auth.uid))
-    }
-    match /extraRegistration/{extra} {
-        allow read, write: if request.auth != null && exists(/databases/$(database)/documents/admins/$(request.auth.uid))
+      allow read, write: if isAdmin();
     }
 
+    match /extraRegistration/{extra} {
+      allow read, write: if isAdmin();
+    }
     match /admins/{admin} {
-    allow read: if request.auth != null && exists(/databases/$(database)/documents/admins/$(request.auth.uid))
+      allow read: if isAdmin();
     }
   }
 }
+
