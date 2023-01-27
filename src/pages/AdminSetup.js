@@ -107,9 +107,9 @@ const AdminSetup = () => {
         display="flex"
         flexDirection="column"
       >
-        <Typography variant="h1">Asetukset</Typography>
+        <Typography variant="h1">Setup</Typography>
         <Stack>
-          <Typography variant="h3">Bileen tiedot</Typography>
+          <Typography variant="h3">Event information</Typography>
           <TextField
             defaultValue={information}
             placeholder="Bileen tiedot tähän"
@@ -119,29 +119,29 @@ const AdminSetup = () => {
             sx={{ width: 400 }}
             onChange={(e) => setInformation(e.target.value)}
           ></TextField>
-          <Typography variant="h4">Lipunmyynti alkanut</Typography>
+          <Typography variant="h4">Event active</Typography>
           <Switch
             checked={isActive}
             onChange={(e) => setIsActive(e.target.checked)}
           />
-          <Typography variant="h4"> Lippujen määrä </Typography>
+          <Typography variant="h4">Quota</Typography>
           <TextField
             value={quota}
             type="number"
             onChange={(e) => setQuota(e.target.value)}
           />
-          <Typography variant="h4">Ensimmäiset x on valittu</Typography>
+          <Typography variant="h4">Tickets distributed</Typography>
           <Switch
             checked={hasDistributedTickets}
             onChange={(e) => setHasDistributedTickets(e.target.checked)}
           />
-          <Typography variant="h4">Voi vaihtaa lippua</Typography>
+          <Typography variant="h4">Can transfer ticket</Typography>
           <Switch
             checked={canTransfer}
             onChange={(e) => setCanTransfer(e.target.checked)}
           />
           <Button variant="contained" onClick={handleSubmit}>
-            Tallenna
+            Save
           </Button>
         </Stack>
       </Box>

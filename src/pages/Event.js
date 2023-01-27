@@ -130,10 +130,10 @@ const Event = () => {
           bgcolor="primary.main"
       >
         <Typography variant="h2" color="white">
-          Sinun sivusi
+          Your page
         </Typography>
       </Box>
-      <Button onClick={goBack}>Takaisin</Button>
+      <Button onClick={goBack}>Back</Button>
       {!hasRegistered && (
         <>
           <Information message={information} />
@@ -144,19 +144,18 @@ const Event = () => {
         <>
           {transferring ? (
             <Information
-              message="Myit tai ostit juuri lipun. Odota kunnes hallituksen bilevastaava
-              hoitaa tilanteen"
+              message="You have bought or sold a ticket. Wait for the organizer's confirmation."
             />
           ) : (
             <>
               {!isAdmitted && hasDistributedTickets && !extraSale && (
-                <Information message="Sinulla ei ole lippua. Voit kuitenkin ostaa lipun henkilöltä joka myy" />
+                <Information message="You do not have a ticket. You can wait for the extra sale or buy from a ticket-holder." />
               )}
               {!isAdmitted && hasDistributedTickets && extraSale && (
                   <ExtraRegistration/>
               )}
               {!isAdmitted && !hasDistributedTickets && (
-                <Information message="Pieni hetki, ensimmäisiä 190 rekisteröidään tällä hetkellä" />
+                <Information message="You have registered. Wait a moment." />
               )}
               {isAdmitted && !hasPaid && (
                 <Information message={paymentInfo} />

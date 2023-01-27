@@ -20,6 +20,6 @@ export const app = initializeApp(firebaseConfig);
 // Initialize features
 export const auth = getAuth();
 export const db = getFirestore();
-export const functions = getFunctions(app);
+export const functions = getFunctions(app, "europe-west3");
 
 

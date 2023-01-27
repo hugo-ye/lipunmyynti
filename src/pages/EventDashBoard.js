@@ -69,7 +69,7 @@ const EventDashBoard = () => {
             </Typography>
           ) : (
             <Button size="large" variant="contained" onClick={handleClick}>
-              Bilesivu
+              Event page
             </Button>
           )}
         </Box>

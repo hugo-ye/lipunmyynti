@@ -32,7 +32,7 @@ const SignIn = () => {
       >
         {/*Page title*/}
         <Typography variant="h1" color="white">
-          TK-bileet
+          TK-party
         </Typography>
       </Box>
       <Box
@@ -43,10 +43,10 @@ const SignIn = () => {
         minHeight="50vh"
       >
         {/*Page subtitle*/}
-        <Typography variant="h2">Lipunmyynti</Typography>
+        <Typography variant="h2">Ticket sale</Typography>
         {/*Sign-in button*/}
         <Button variant="contained" onClick={signIn} sx={{ marginTop: 2 }}>
-          Kirjaudu sisään Googlella
+          Sign in with Google
         </Button>
       </Box>
     </>

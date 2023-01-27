@@ -68,23 +68,23 @@ const AdminLog = () => {
     () => [
       {
         field: "fromEmail",
-        headerName: "Myyjän sähköposti",
+        headerName: "Seller email",
         flex: 1,
       },
       {
         field: "toEmail",
-        headerName: "Saajan sähköposti",
+        headerName: "Receiver email",
         flex: 1,
       },
       {
         field: "id",
-        headerName: "ID",
+        headerName: "Case id",
         flex: 1,
       },
 
       {
         field: "resolved",
-        headerName: "Ratkaistu",
+        headerName: "Resolved",
         flex: 1,
         type: "boolean",
         editable: true,
@@ -92,7 +92,7 @@ const AdminLog = () => {
 
       {
         field: "actions",
-        headerName: "Actions",
+        headerName: "Save",
         Type: "actions",
         // Save button, calls the component that commits changes to the database
         renderCell: (params) => <ResolveLog {...{ params, rowId, setRowId }} />,

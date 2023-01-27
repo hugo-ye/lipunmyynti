@@ -72,8 +72,8 @@ const AdminUpdate = () => {
       justifyContent="center"
       alignItems="center"
     >
-      <Typography variant="h1">Päivitystä lipunomistajille</Typography>
-      <Typography variant="h4">Tiedotukset</Typography>
+      <Typography variant="h1">Info updates</Typography>
+      <Typography variant="h4">Updates</Typography>
       {/* Text field for editing information updates*/}
       <TextField
         defaultValue={updates}
@@ -84,7 +84,7 @@ const AdminUpdate = () => {
         margin="normal"
         onChange={(e) => setUpdates(e.target.value)}
       />
-      <Typography variant="h4">Maksutiedot</Typography>
+      <Typography variant="h4">Payment info</Typography>
       {/* Text field for editing payment details*/}
       <TextField
         defaultValue={paymentDetails}
@@ -97,7 +97,7 @@ const AdminUpdate = () => {
       />
       {/* Submit button for saving data*/}
       <Button variant="contained" sx={{ marginTop: 1 }} onClick={handleClick}>
-        Update info
+        Save
       </Button>
     </Box>
   );

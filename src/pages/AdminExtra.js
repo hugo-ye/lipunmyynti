@@ -78,25 +78,25 @@ const AdminExtra = () => {
     () => [
       {
         field: "email",
-        headerName: "Sähköposti",
+        headerName: "Email",
         flex: 1,
       },
       {
         field: "registrationTime",
-        headerName: "Rekisteröitymisaika",
+        headerName: "Registration time",
         renderCell: (params) =>
           moment(params.row.registrationTime).format("MMMM Do YYYY, h:mm:ss a"),
         flex: 1,
       },
       {
         field: "uid",
-        headerName: "UID",
+        headerName: "uid",
         flex: 1,
       },
 
       {
         field: "admitted",
-        headerName: "Hyväksytty",
+        headerName: "Approved",
         flex: 1,
         type: "boolean",
         editable: true,
@@ -104,7 +104,7 @@ const AdminExtra = () => {
 
       {
         field: "actions",
-        headerName: "Actions",
+        headerName: "Save",
         Type: "actions",
         renderCell: (params) => (
             // Save button, calls the component that commits changes to the database

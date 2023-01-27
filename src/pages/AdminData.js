@@ -132,46 +132,46 @@ const AdminData = () => {
     () => [
       {
         field: "lastName",
-        headerName: "Sukunimi",
+        headerName: "Last name",
         flex: 1,
       },
       {
         field: "firstName",
-        headerName: "Etunimi",
+        headerName: "First name",
         flex: 1,
       },
       {
         field: "yearGroup",
-        headerName: "Luokka-aste",
+        headerName: "Year group",
         flex: 1,
       },
       {
         field: "email",
-        headerName: "Sähköposti",
+        headerName: "Email",
         flex: 1,
       },
       {
         field: "uid",
-        headerName: "id",
+        headerName: "uid",
         flex: 1,
       },
       {
         field: "isAdmitted",
-        headerName: "Omistaa lipun",
+        headerName: "Has ticket",
         flex: 1,
         type: "boolean",
         editable: true,
       },
       {
         field: "hasPaid",
-        headerName: "On maksanut",
+        headerName: "Has paid",
         flex: 1,
         type: "boolean",
         editable: true,
       },
       {
         field: "transferring",
-        headerName: "Vaatii huomiota",
+        headerName: "Transferring",
         flex: 1,
         type: "boolean",
         editable: true,
@@ -179,7 +179,7 @@ const AdminData = () => {
 
       {
         field: "actions",
-        headerName: "Actions",
+        headerName: "Save",
         Type: "actions",
         // Save button, calls the component that commits changes to the database
         renderCell: (params) => (
@@ -214,12 +214,12 @@ const AdminData = () => {
         <Stack spacing={2}>
           {/* Shows the button that prints the namelist*/}
           <Button variant="contained" onClick={printNameList}>
-            Tulosta nimilista
+            Print name list
           </Button>
           {/* Shows distribute tickets button if tickets have not yet been distributed*/}
           {!distributed && (
             <Button variant="contained" onClick={distributeTickets}>
-              Valitaan {quota}
+              Distributing to {quota}
             </Button>
           )}
         </Stack>

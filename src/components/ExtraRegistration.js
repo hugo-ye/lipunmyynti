@@ -31,7 +31,7 @@ const ExtraRegistration = () => {
             <>
               <Typography variant="h5" padding={3} textAlign="center">
                 {" "}
-                Uusi myynti käynnissä
+                Extra sale
               </Typography>
 
               <Button
@@ -39,12 +39,12 @@ const ExtraRegistration = () => {
                 variant="contained"
                 onClick={handleSubmit}
               >
-                Ilmoittaudu
+                Register
               </Button>
             </>
           ) : (
             <Typography variant="h2" padding={3} textAlign="center">
-              Olet rekisteröitynyt. Odota että bilevastaavan ilmoitusta.
+              You have registered. Wait for the organizer's confirmation.
             </Typography>
           )}
         </Box>

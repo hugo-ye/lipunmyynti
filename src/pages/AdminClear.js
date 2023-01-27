@@ -37,7 +37,7 @@ const AdminClear = () => {
   const [extraCount, setExtraCount] = useState(0);
   const [deleting, setDeleting] = useState(false);
 
-  const handleClick = (e) => {
+  const handleClick = async (e) => {
     e.preventDefault();
     /* Defines a function that reads all the existing documents in a collection
         and deletes them by calling delete on the document id*/
@@ -75,9 +75,9 @@ const AdminClear = () => {
       }
     };
 
-    clearRegistrants();
-    clearTransferLogs();
-    clearExtraRegistrants();
+    await clearRegistrants();
+    await clearTransferLogs();
+    await clearExtraRegistrants();
     window.location.reload();
   };
 
@@ -128,28 +128,27 @@ const AdminClear = () => {
       display="flex"
       flexDirection="column"
     >
-      <Typography variant="h1">Tyhjennä tietokanta</Typography>
-      <Typography variant="h4">Tietokannassa on rekisteröityjiä</Typography>
+      <Typography variant="h1">Clear data</Typography>
+      <Typography variant="h4">Registrant count:</Typography>
       <Card>
         {/* Shows the count of registrants for reference of data existence in the database*/}
         <Typography variant="h5">{registrantCount}</Typography>
       </Card>
 
-      <Typography variant="h4">lipunsiirto pyyntöjä</Typography>
+      <Typography variant="h4">Transfer count:</Typography>
       <Card>
         {/* Shows the count of registrants for reference of data existence in the database*/}
         <Typography variant="h5">{transferCount}</Typography>
       </Card>
 
-      <Typography variant="h4">extramyynnin pyyntöjä</Typography>
+      <Typography variant="h4">Extra sale count</Typography>
       <Card>
         {/* Shows the count of registrants for reference of data existence in the database*/}
         <Typography variant="h5">{extraCount}</Typography>
       </Card>
 
       <Typography variant="h4">
-        Paina tästä tyhjentääkseen tietokannat "Rekisteröijä", "Lipun siirrot"
-        ja "Extra myynti".
+        Click here to clear all 3 collections.
       </Typography>
       {/* Shows a button that calls the dialog for confirmation*/}
       <Button
@@ -157,20 +156,20 @@ const AdminClear = () => {
         sx={{ marginTop: 1 }}
         onClick={() => setDeleting(true)}
       >
-        Tyhjennä
+        Clear
       </Button>
       {/* Shows a dialog for confirmation of data deletion*/}
       <Dialog open={deleting} onClose={() => setDeleting(false)}>
-        <DialogTitle>{"Oletko varma"}</DialogTitle>
+        <DialogTitle>{"Are you sure?"}</DialogTitle>
         <DialogContent>
           <DialogContentText>
-            Poistettua dataa ei voida palauttaa!
+            Deleted data can not be recovered!
           </DialogContentText>
         </DialogContent>
         <DialogActions>
-          <Button onClick={() => setDeleting(false)}>Poistu</Button>
+          <Button onClick={() => setDeleting(false)}>Exit</Button>
           <Button onClick={handleClick} autoFocus>
-            Tyhjennä
+            Clear
           </Button>
         </DialogActions>
       </Dialog>

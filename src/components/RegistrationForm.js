@@ -12,6 +12,7 @@ const RegistrationForm = ({ yearGroups }) => {
 
 
   const handleSubmit = async (e) => {
+
     e.preventDefault();
     const addRegistrant = httpsCallable(functions, "addRegistrantEurope");
     // Calls the server-side function with the following parameters
@@ -41,25 +42,25 @@ const RegistrationForm = ({ yearGroups }) => {
             <>
               <Typography variant="h2" padding={3} textAlign="center">
                 {" "}
-                TK-bileet 2022
+                TK-party
               </Typography>
               <TextField
                 margin="dense"
                 variant="outlined"
-                placeholder="Etunimi"
+                placeholder="First name"
                 onChange={(e) => setFirstName(e.target.value)}
                 required
               />
               <TextField
                 margin="dense"
                 variant="outlined"
-                placeholder="Sukunimi"
+                placeholder="Last name"
                 onChange={(e) => setLastName(e.target.value)}
                 required
               />
               <Select
-                name="Luokka-aste"
-                label="Luokka-aste"
+                name="Year group"
+                label="Year group"
                 value={yearGroup}
                 sx={{ minWidth: 100, marginTop: 2 }}
                 onChange={(e) => setYearGroup(e.target.value)}
@@ -75,7 +76,7 @@ const RegistrationForm = ({ yearGroups }) => {
                 variant="contained"
                 onClick={handleSubmit}
               >
-                Ilmoittaudu
+                Register
               </Button>
             </>
           ) : (

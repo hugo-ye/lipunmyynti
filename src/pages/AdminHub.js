@@ -44,22 +44,22 @@ const AdminHub = () => {
       {/* Creates buttons and titles for navigating to specific admin pages */}
       <Typography variant="h1">Adminin sivut</Typography>
       <Button href="/admindata" variant="contained" sx={{ margin: 2 }}>
-        Rekisteröityneet
+        Registrants
       </Button>
       <Button href="/adminsetup" variant="contained" sx={{ margin: 2 }}>
-        Asetukset
+        Setup
       </Button>
       <Button href="/adminupdate" variant="contained" sx={{ margin: 2 }}>
-        Päivitykset
+        Updates
       </Button>
       <Button href="/adminlog" variant="contained" sx={{ margin: 2 }}>
-        Lipun siirrot
+        Ticket transfers
       </Button>
       <Button href="/adminextra" variant="contained" sx={{ margin: 2 }}>
-        Extramyynti
+        Extra registration
       </Button>
       <Button href="/adminclear" variant="contained" sx={{ margin: 2 }}>
-        Tyhjennä tietokanta
+        Clear data
       </Button>
     </Box>
   );
