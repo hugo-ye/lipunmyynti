@@ -41,8 +41,8 @@ const AdminHub = () => {
       alignItems="center"
       minHeight="75vh"
     >
-      {/* Creates buttons and titles for navigating to specific admin pages */}
-      <Typography variant="h1">Adminin sivut</Typography>
+      {/* Creates buttons and their titles for navigating to specific admin pages */}
+      <Typography variant="h1">Admin pages</Typography>
       <Button href="/admindata" variant="contained" sx={{ margin: 2 }}>
         Registrants
       </Button>

@@ -9,8 +9,11 @@ const ExtraRegistration = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    // Defines the address of the cloud function for extra registration
     const addRegistrant = httpsCallable(functions, "addExtraRegistrantEurope");
+    // Calls the cloud function
     await addRegistrant()
+    // Shows waiting view
     setHasRegistered(true);
   };
   return (

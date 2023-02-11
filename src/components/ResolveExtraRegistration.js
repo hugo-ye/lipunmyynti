@@ -10,23 +10,29 @@ const ResolveExtraRegistration = ({ params, rowId, setRowId }) => {
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
 
+  // Save data function
   const handleSubmit = async (e) => {
     try {
       e.preventDefault();
+      // Sets loading to be true
       setLoading(true);
+      // Uses the parameters from the specific row from the parent table
       const { admitted, uid } = params.row;
+      // Reference for the document in the database
       const requestRef = doc(db, "extraRegistration", uid);
-
+      // Updates the document with the new data, collection-specific data model specified here
       await updateDoc(requestRef, {
         admitted: admitted,
       }).then(() => {
+        // Shows success icon
         setSuccess(true);
         setRowId(null);
       });
-
+    // sets loading to be false
       setLoading(false);
     } catch (error) {}
   };
+  // Resetting the success icon
   useEffect(() => {
     if (rowId === params.id && success) setSuccess(false);
   }, [rowId]);
@@ -38,6 +44,7 @@ const ResolveExtraRegistration = ({ params, rowId, setRowId }) => {
             position: "relative",
           }}
       >
+        {/*Shows a Check symbol if success, shows save button if not*/}
         {success ? (
             <Fab
                 color="primary"
@@ -60,6 +67,7 @@ const ResolveExtraRegistration = ({ params, rowId, setRowId }) => {
               <Save />
             </Fab>
         )}
+        {/*Shows a loading symbol if loading*/}
         {loading && (
             <CircularProgress
                 size={52}

@@ -42,11 +42,15 @@ const AdminClear = () => {
     /* Defines a function that reads all the existing documents in a collection
         and deletes them by calling delete on the document id*/
     const clearRegistrants = async () => {
+      // Empty list for document ids
       let allRegistrants = [];
+      // Gets a snapshot of the collection specified
       const querySnapshot = await getDocs(collection(db, "registrants"));
+      // Loops through each of the document in the collection and pushes the document id to the list
       querySnapshot.forEach((doc) => {
         allRegistrants.push(doc.id);
       });
+      // loops through all the ids and calls delete on the document with that id
       for (const registrant of allRegistrants) {
         await deleteDoc(doc(db, "registrants", registrant));
       }
@@ -107,8 +111,11 @@ const AdminClear = () => {
   useEffect(() => {
     if (isAdmin && !isLoading && authUser) {
       const fetchData = async () => {
+        // Collection reference
         const regColl = collection(db, "registrants");
+        // collection snapshot
         const regSnap = await getCountFromServer(regColl);
+        // sets the state with the data value
         setRegistrantCount(regSnap.data().count);
         const transferColl = collection(db, "transferLogs");
         const transferSnap = await getCountFromServer(transferColl);
@@ -129,21 +136,20 @@ const AdminClear = () => {
       flexDirection="column"
     >
       <Typography variant="h1">Clear data</Typography>
+      {/*Title of the collection*/}
       <Typography variant="h4">Registrant count:</Typography>
       <Card>
-        {/* Shows the count of registrants for reference of data existence in the database*/}
+        {/* Shows the count of documents in the collection for reference of data existence in the database*/}
         <Typography variant="h5">{registrantCount}</Typography>
       </Card>
 
       <Typography variant="h4">Transfer count:</Typography>
       <Card>
-        {/* Shows the count of registrants for reference of data existence in the database*/}
         <Typography variant="h5">{transferCount}</Typography>
       </Card>
 
       <Typography variant="h4">Extra sale count</Typography>
       <Card>
-        {/* Shows the count of registrants for reference of data existence in the database*/}
         <Typography variant="h5">{extraCount}</Typography>
       </Card>
 
@@ -167,7 +173,9 @@ const AdminClear = () => {
           </DialogContentText>
         </DialogContent>
         <DialogActions>
+          {/* Button that exists from the dialog*/}
           <Button onClick={() => setDeleting(false)}>Exit</Button>
+          {/* Button that calls the deletion function */}
           <Button onClick={handleClick} autoFocus>
             Clear
           </Button>

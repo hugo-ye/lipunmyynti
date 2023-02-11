@@ -65,7 +65,7 @@ const EventDashBoard = () => {
         >
           {!isEnabled ? (
             <Typography variant="h5">
-              Lipunmyynti ei ole vielä alkanut.
+              The event is not active.
             </Typography>
           ) : (
             <Button size="large" variant="contained" onClick={handleClick}>

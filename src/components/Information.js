@@ -1,6 +1,7 @@
 import { Box, Typography } from "@mui/material";
 
 const Information = ({ message }) => {
+  // Defines the view panel for all text information messages
   return (
     <Box
       display="flex"

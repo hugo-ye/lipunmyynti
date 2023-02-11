@@ -23,7 +23,7 @@ import CommitChange from "../components/CommitChange";
 
 const AdminData = () => {
   const [users, setUsers] = useState([]);
-  const [isAdmin, setIsAdmin] = useState("false");
+  const [isAdmin, setIsAdmin] = useState(false);
   const { authUser, isLoading } = useAuth();
   const navigate = useNavigate();
   const [pageSize, setPageSize] = useState(20);
@@ -33,15 +33,19 @@ const AdminData = () => {
 
   // Routes to sign-in page if user is not authenticated or is not an admin
   useEffect(() => {
+    // Routes to sign-in page if user has not authenticated
     if (!isLoading && !authUser) {
       navigate("/");
     } else if (!isLoading && authUser) {
+      // Defines path to the admin page with the request uid as the document id
       const docRef = doc(db, "admins", authUser.uid);
       const fetchIsAdmin = async () => {
         try {
+          // Fetches the document
           const docSnap = await getDoc(docRef);
-          if (docSnap.exists() && docSnap.data().isAdmin) {
-            setIsAdmin(docSnap.data().isAdmin);
+          // Sets the state to true if the document exists, else route to sign-in
+          if (docSnap.exists()) {
+            setIsAdmin(true);
           } else {
             navigate("/");
           }
@@ -118,7 +122,7 @@ const AdminData = () => {
     // Creates a pdf document with only the necessary fields
     const doc = new jsPDF();
     autoTable(doc, {
-      head: [["Sukunimi", "Etunimi", "Luokka-aste"]],
+      head: [["Last name", "First name", "Year group"]],
       body: printArray.map((user) => {
         return [user.lastName, user.firstName, user.yearGroup];
       }),
@@ -216,8 +220,8 @@ const AdminData = () => {
           <Button variant="contained" onClick={printNameList}>
             Print name list
           </Button>
-          {/* Shows distribute tickets button if tickets have not yet been distributed*/}
-          {!distributed && (
+          {/* Shows distribute tickets button if tickets have not yet been distributed and users array is not empty*/}
+          {!distributed && users.length !== 0 && (
             <Button variant="contained" onClick={distributeTickets}>
               Distributing to {quota}
             </Button>

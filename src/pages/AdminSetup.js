@@ -22,12 +22,13 @@ const AdminSetup = () => {
 
   // Defines states, dynamic data that are changed
   const [isAdmin, setIsAdmin] = useState(false);
-  const [quota, setQuota] = useState(0);
+  const [quota, setQuota] = useState(null);
   const [information, setInformation] = useState("");
   const [isActive, setIsActive] = useState(false);
   const [canTransfer, setCanTransfer] = useState(false);
   const [yearGroups, setYearGroups] = useState([]);
   const [hasDistributedTickets, setHasDistributedTickets] = useState(false);
+  const [extraSale, setExtraSale] = useState(false);
   const [warning, setWarning] = useState(false);
 
   // Writes edited data about the event to the database
@@ -55,6 +56,7 @@ const AdminSetup = () => {
           quota: Number(quota),
           yearGroups: yearGroups,
           hasDistributedTickets: hasDistributedTickets,
+          extraSale: extraSale
         });
       } catch (e) {}
       window.location.reload();
@@ -94,13 +96,14 @@ const AdminSetup = () => {
         setCanTransfer(data.canTransfer);
         setYearGroups(data.yearGroups);
         setHasDistributedTickets(data.hasDistributedTickets);
+        setExtraSale(data.extraSale)
       };
       fetchData();
     }
   }, [isAdmin]);
   return (
     <>
-      {warning && <Alert severity="error">Lukumäärän täytyy olla luku</Alert>}
+      {warning && <Alert severity="error">The quota must be an integer!</Alert>}
       <Box
         justifyContent="center"
         alignItems="center"
@@ -139,6 +142,11 @@ const AdminSetup = () => {
           <Switch
             checked={canTransfer}
             onChange={(e) => setCanTransfer(e.target.checked)}
+          />
+          <Typography variant="h4">Extra registration</Typography>
+          <Switch
+              checked={extraSale}
+              onChange={(e) => setExtraSale(e.target.checked)}
           />
           <Button variant="contained" onClick={handleSubmit}>
             Save

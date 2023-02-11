@@ -6,7 +6,7 @@ import { doc, getDoc } from "firebase/firestore";
 
 import { useAuth } from "../contexts/AuthContext";
 
-import {Box, CircularProgress, Typography} from "@mui/material";
+import { Box, CircularProgress, Typography } from "@mui/material";
 import Button from "@mui/material/Button";
 
 import RegistrationForm from "../components/RegistrationForm";
@@ -20,6 +20,10 @@ const Event = () => {
 
   const [isLoadingData, setIsLoadingData] = useState(false);
 
+  /* States, variables that prompt components to re-render
+    when they change. The following states contains the registrant's
+    data fetched from the database.
+     */
   const [hasPaid, setHasPaid] = useState(false);
   const [isAdmitted, setIsAdmitted] = useState(false);
   const [hasRegistered, setHasRegistered] = useState(false);
@@ -72,31 +76,37 @@ const Event = () => {
     }
   }, [authUser, isLoading]);
 
-  // Fetch user specific data, ran only if event is active
+  /* Fetch user specific data. UseEffect runs to change states in
+   components with new data whenever its variables
+   in the dependency array sees a change
+     */
   useEffect(() => {
     if (isActive) {
       const fetchUserData = async () => {
         setIsLoadingData(true);
         try {
-          const docRef = doc(db, "registrants", authUser.uid);
           // Path to the document of the registrant
+          const docRef = doc(db, "registrants", authUser.uid);
+          // Fetches the snapshot of the document
           const docSnap = await getDoc(docRef);
           if (docSnap.exists()) {
             setHasRegistered(true);
+            // Sets the states with fetched value
             setIsAdmitted(docSnap.data().isAdmitted);
             setHasPaid(docSnap.data().hasPaid);
             setTransferring(docSnap.data().transferring);
           } else {
             setHasRegistered(false);
           }
-          setIsLoadingData(false);
-        } catch (error) {}
+        } catch (error) {
+          console.log(error);
+        }
         setIsLoadingData(false);
       };
 
       fetchUserData();
     }
-  }, [isActive]);
+  }, [isActive]); // Dependency array
 
   // Fetching exclusive data for ticket holders. Ran only if the user has a ticket
   useEffect(() => {
@@ -123,11 +133,11 @@ const Event = () => {
   ) : (
     <>
       <Box
-          display="flex"
-          flexDirection="column"
-          justifyContent="center"
-          alignItems="center"
-          bgcolor="primary.main"
+        display="flex"
+        flexDirection="column"
+        justifyContent="center"
+        alignItems="center"
+        bgcolor="primary.main"
       >
         <Typography variant="h2" color="white">
           Your page
@@ -143,23 +153,19 @@ const Event = () => {
       {hasRegistered && (
         <>
           {transferring ? (
-            <Information
-              message="You have bought or sold a ticket. Wait for the organizer's confirmation."
-            />
+            <Information message="You have bought or sold a ticket. Wait for the organizer's confirmation." />
           ) : (
             <>
               {!isAdmitted && hasDistributedTickets && !extraSale && (
                 <Information message="You do not have a ticket. You can wait for the extra sale or buy from a ticket-holder." />
               )}
               {!isAdmitted && hasDistributedTickets && extraSale && (
-                  <ExtraRegistration/>
+                <ExtraRegistration />
               )}
               {!isAdmitted && !hasDistributedTickets && (
                 <Information message="You have registered. Wait a moment." />
               )}
-              {isAdmitted && !hasPaid && (
-                <Information message={paymentInfo} />
-              )}
+              {isAdmitted && !hasPaid && <Information message={paymentInfo} />}
               {isAdmitted && hasPaid && (
                 <>
                   <Information message={memberUpdates} />

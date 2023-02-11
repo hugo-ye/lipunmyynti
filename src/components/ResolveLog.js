@@ -13,20 +13,27 @@ const ResolveLog = ({ params, rowId, setRowId }) => {
   const handleSubmit = async (e) => {
     try {
       e.preventDefault();
+      // Sets loading to be true
       setLoading(true);
+      // Uses the parameters from the specific row from the parent table
       const { resolved, id } = params.row;
+      // Reference for the document in the database
       const logRef = doc(db, "transferLogs", id);
+      // Updates the document with the new data, collection-specific data model specified here
       await updateDoc(logRef, {
         resolved: resolved,
       }).then(() => {
+        // Shows success icon
         setSuccess(true);
+        // Resets the target row
         setRowId(null);
       });
-
+      // sets loading to be false
       setLoading(false);
     } catch (error) {
     }
   };
+  // Resetting the success icon
   useEffect(() => {
     if (rowId === params.id && success) setSuccess(false);
   }, [rowId]);
@@ -38,6 +45,7 @@ const ResolveLog = ({ params, rowId, setRowId }) => {
         position: "relative",
       }}
     >
+      {/*Shows a Check symbol if success, shows save button if not*/}
       {success ? (
         <Fab
           color="primary"
@@ -60,6 +68,7 @@ const ResolveLog = ({ params, rowId, setRowId }) => {
           <Save />
         </Fab>
       )}
+      {/*Shows a loading symbol if loading*/}
       {loading && (
         <CircularProgress
           size={52}

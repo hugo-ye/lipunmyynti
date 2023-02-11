@@ -77,7 +77,7 @@ const AdminUpdate = () => {
       {/* Text field for editing information updates*/}
       <TextField
         defaultValue={updates}
-        placeholder="Ei tiedotusta"
+        placeholder="Nothing here."
         multiline
         rows={10}
         sx={{ width: 600 }}
@@ -88,7 +88,7 @@ const AdminUpdate = () => {
       {/* Text field for editing payment details*/}
       <TextField
         defaultValue={paymentDetails}
-        placeholder="Ei maksutietoja"
+        placeholder="Nothing here."
         multiline
         rows={10}
         sx={{ width: 600 }}

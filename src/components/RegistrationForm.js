@@ -10,10 +10,11 @@ const RegistrationForm = ({ yearGroups }) => {
   const [yearGroup, setYearGroup] = useState(yearGroups[0]);
   const [hasRegistered, setHasRegistered] = useState(false);
 
-
+// Registration function, called via button press
   const handleSubmit = async (e) => {
-
+    // prevent window reload
     e.preventDefault();
+    // Server-side cloud function
     const addRegistrant = httpsCallable(functions, "addRegistrantEurope");
     // Calls the server-side function with the following parameters
     await addRegistrant({
@@ -21,6 +22,7 @@ const RegistrationForm = ({ yearGroups }) => {
       lastName: lastName,
       yearGroup: yearGroup,
     })
+    // Sets the registered state to be true, hence show user has registered view
     setHasRegistered(true);
   };
 
@@ -81,7 +83,7 @@ const RegistrationForm = ({ yearGroups }) => {
             </>
           ) : (
             <Typography variant="h2" padding={3} textAlign="center">
-              Olet rekisteröitynyt. Päivitä sivu muutaman minuutin kuluttua
+              You have registered. Wait a few seconds and then refresh the page.
             </Typography>
           )}
         </Box>

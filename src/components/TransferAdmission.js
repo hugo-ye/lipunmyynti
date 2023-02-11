@@ -8,12 +8,16 @@ import Button from "@mui/material/Button";
 const TransferAdmission = () => {
   const [toEmail, setToEmail] = useState("");
   const [hasSold, setHasSold] = useState(false);
+
+  // Function for transferring ticket
   const handleSubmit = async (e) => {
     e.preventDefault();
+    // Defines the address of the cloud function
     const transferAdmission = httpsCallable(
       functions,
       "transferAdmissionEurope"
     );
+    // Calls the cloud function with the authentication session's email as a parameter
     setHasSold(true);
     await transferAdmission({
       toEmail: toEmail,
@@ -33,17 +37,16 @@ const TransferAdmission = () => {
       boxShadow={"5px 5px 10px #ccc"}
     >
       {hasSold ? (
-        <Typography variant="h6">Yritetään lipunsiirtoa. Palaa sivulle muutaman minuutin kuluessa.</Typography>
+        <Typography variant="h6">Attempting to transfer. Return to this page in a few minutes.</Typography>
       ) : (
         <>
           <Typography variant="h6">
-            Myy lippu. Pidä huolta, että vastaanottaja on varmasti
-            ilmoittautunut bileisiin.{" "}
+            Transfer ticket. Make sure that the receiver has registered for the event. {" "}
           </Typography>
           <TextField
             margin="dense"
             variant="outlined"
-            placeholder="Vastaanottajan sähköposti"
+            placeholder="Receiver email"
             onChange={(e) => setToEmail(e.target.value)}
             required
           />
@@ -52,7 +55,7 @@ const TransferAdmission = () => {
             variant="contained"
             onClick={handleSubmit}
           >
-            Myy
+            Transfer
           </Button>
         </>
       )}
@@ -62,19 +65,6 @@ const TransferAdmission = () => {
 
 export default TransferAdmission;
 
-/*
-    <div>
-      <form onSubmit={handleSubmit}>
-        <input
-          type="text"
-          placeholder={"Transfer to"}
-          value={toEmail}
-          onChange={(e) => setToEmail(e.target.value)}
-          required
-        />
-        <button type={"submit"}>Submit</button>
-      </form>
-    </div>
-  );
+
   
-   */
+
